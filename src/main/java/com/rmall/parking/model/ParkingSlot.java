@@ -1,25 +1,57 @@
-// Java class representing a parking slot
+// ParkingSlot.java
+package com.rmall.parking.model;
+
+/**
+ * The ParkingSlot class represents a single parking slot in the system.
+ * It will manage the state of the parking slot, whether it is occupied
+ * or not and provides thread-safe operations on these states.
+ */
 public class ParkingSlot {
-    private int floor;
-    private String section;
-    private String position;
+    
+    // The 'volatile' keyword ensures that changes to this variable are
+    // immediately visible to other threads. This is important in a 
+    // multithreaded environment where one thread may be modifying the 
+    // variable while another thread reads it.
+    private volatile boolean occupied;
 
-    public ParkingSlot(int floor, String section, String position) {
-        this.floor = floor;
-        this.section = section;
-        this.position = position;
+    // The constructor initializes the parking slot as not occupied.
+    public ParkingSlot() {
+        this.occupied = false;
     }
 
-    public synchronized void parkCar() {
-        // Logic to park the car
+    /**
+     * Marks the parking slot as occupied. This method is synchronized
+     * to ensure that only one thread can execute it at a time. This 
+     * prevents race conditions where multiple threads might try 
+     * to occupy the slot simultaneously.
+     */
+    public synchronized void occupy() {
+        if (!occupied) {
+            occupied = true;
+        } else {
+            throw new IllegalStateException("Parking slot is already occupied.");
+        }
     }
 
-    public synchronized void clearSlot() {
-        // Logic to clear the slot
+    /**
+     * Marks the parking slot as vacant. This method is synchronized
+     * to prevent multiple threads from changing the occupied status
+     * simultaneously.
+     */
+    public synchronized void vacate() {
+        if (occupied) {
+            occupied = false;
+        } else {
+            throw new IllegalStateException("Parking slot is already vacant.");
+        }
     }
 
-    public synchronized Optional<Car> getParkedCar() {
-        // Logic to get the parked car
-        return Optional.empty(); // Placeholder
+    /**
+     * Returns the occupancy status of the parking slot.
+     * 
+     * @return true if the slot is occupied, false otherwise.
+     */
+    public boolean isOccupied() {
+        return occupied;
     }
 }
