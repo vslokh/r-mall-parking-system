@@ -1,42 +1,53 @@
-// The ParkedCarOwnerDetails class represents the details of a car owner parked in the system.
-// It uses Java Record feature, which is a special kind of class in Java introduced in Java 14 to model immutable data.
+package com.rmall.parking.model;
 
 /**
- * ParkedCarOwnerDetails is a record which automatically generates the getter methods,
- * equals(), hashCode() and toString() methods based on the parameters defined in the record.
+ * JAVA 23 RECORD - Parked Car Owner Details
+ * A record is an immutable data carrier class introduced in Java 14 and finalized in Java 16.
+ * Records automatically generate constructor, getters, equals(), hashCode(), and toString().
  */
-public record ParkedCarOwnerDetails(
-    // The name of the car owner
-    String ownerName,
-    // The contact number of the car owner, must be a valid phone number
-    String contactNumber,
-    // The license plate number of the parked car
-    String licensePlateNumber
+public record Parked_CarOwner_Details(
+    String ownerName,      // Name of the car owner
+    String carModel,       // Model of the car
+    String carNo,          // Car registration number
+    String ownerMobileNo,  // Mobile number (10 digits)
+    String ownerAddress    // Address of the owner
 ) {
-
-    // Compact constructor to validate the input data during the instantiation of the record.
-    public ParkedCarOwnerDetails {
-        if (ownerName == null || ownerName.isBlank()) {
-            throw new IllegalArgumentException("Owner name cannot be null or empty.");
-        }
-        if (contactNumber == null || !contactNumber.matches("\\d{10}")) {
-            throw new IllegalArgumentException("Contact number must be a valid 10-digit number.");
-        }
-        if (licensePlateNumber == null || licensePlateNumber.isBlank()) {
-            throw new IllegalArgumentException("License plate number cannot be null or empty.");
-        }
-    }
-
     /**
-     * Custom toString method to output the details in a human-readable format.
-     * Overrides the default implementation to provide a better representation.
+     * Compact Constructor - validates and normalizes data before object creation
      */
+    public Parked_CarOwner_Details {
+        // Validate owner name
+        if (ownerName == null || ownerName.isBlank()) {
+            throw new IllegalArgumentException("Owner name cannot be empty");
+        }
+        
+        // Validate car number
+        if (carNo == null || carNo.isBlank()) {
+            throw new IllegalArgumentException("Car number cannot be empty");
+        }
+        
+        // Validate mobile number - must be exactly 10 digits
+        if (ownerMobileNo == null || !ownerMobileNo.matches("\\d{10}")) {
+            throw new IllegalArgumentException("Mobile number must be 10 digits");
+        }
+        
+        // Normalize car number to uppercase for consistency
+        carNo = carNo.toUpperCase().trim();
+    }
+    
     @Override
     public String toString() {
-        return "ParkedCarOwnerDetails {" +
-               " ownerName='" + ownerName + '\'' +
-               ", contactNumber='" + contactNumber + '\'' +
-               ", licensePlateNumber='" + licensePlateNumber + '\'' +
-               '}';
+        return """
+               ╔═══════════════════════════════════════════════╗
+               ║          CAR OWNER DETAILS                    ║
+               ╠═══════════════════════════════════════════════╣
+               ║ Owner Name    : %-30s║
+               ║ Car Model     : %-30s║
+               ║ Car Number    : %-30s║
+               ║ Mobile Number : %-30s║
+               ║ Address       : %-30s║
+               ╚═══════════════════════════════════════════════╝
+               """.formatted(ownerName, carModel, carNo, ownerMobileNo, 
+                           ownerAddress.length() > 30 ? ownerAddress.substring(0, 27) + "..." : ownerAddress);
     }
 }
